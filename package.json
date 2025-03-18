@@ -1,0 +1,25 @@
+{
+  "name": "task-planner-cli",
+  "version": "1.0.0",
+  "description": "A simple CLI task planner application",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "task-planner-cli"
+  },
+  "keywords": [
+    "task",
+    "planner"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
