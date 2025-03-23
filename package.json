@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "A simple CLI task planner application",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "startCommonJS": "ts-node src/index.ts",
+    "dev": "node src/dist/index.js",
     "build": "tsc",
     "build:watch": "tsc -w",
     "test": "test"
+  },
+  "bin": {
+    "task-cli": "./bin/task-cli.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +23,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^22.13.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   }
