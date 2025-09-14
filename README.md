@@ -1,41 +1,44 @@
-# Task Planner CLI app
+# task-planner-cli
+Task Tracker
+
+## How to Run the Application
 
 ### Standard Setup & Execution
 
-- **Install dependencies:**  
-  ```bash
-  npm install
-  ```
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-- **Build and run in development mode (with file watching):**  
-  ```bash
-  npm run build:watch & npm run dev
-  ```
+2. Build and run in development mode:
+   ```bash
+   npm run build:watch & npm run dev
+   ```
+   *Use this method for rapid development with automatic rebuilding when files change.*
 
-- **Build once and run:**  
-  ```bash
-  npm run build && npm run dev
-  ```
+   Alternatively, build once and then run:
+   ```bash
+   npm run build && npm run dev
+   ```
+   *Prefer this method for production or when you need a clean build.*
 
-### Direct Execution of TypeScript
+### Direct TypeScript Execution
 
-- **Run without prior compilation:**  
-
-  ```bash
-  npm start
-  ```
+Run TypeScript files directly without separate compilation:
+```bash
+npm start
+```
+*This is useful for quick testing during development.*
 
 ### Global CLI Usage
 
-- **Link the package globally for command-line access:**  
+Make the tool available as a global command:
+```bash
+npm link task-cli
+```
 
-  ```bash
-  npm link
-  ```  
-- **Run without prior compilation:**
-
-  ```bash
-  task-cli
-  ```  
-  
-  *Note: Replace `task-cli` with the actual package name if different.*
+After linking, run commands directly using:
+```bash
+task-cli [command] [options]
+```
+*Replace `task-cli` with the actual package name if different.*

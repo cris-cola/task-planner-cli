@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A simple CLI task planner application",
   "scripts": {
-    "startCommonJS": "ts-node src/index.ts",
+    "start": "ts-node src/index.ts",
     "dev": "node src/dist/index.js",
     "build": "tsc",
     "build:watch": "tsc -w",
