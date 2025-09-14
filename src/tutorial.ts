@@ -19,7 +19,7 @@ function formatCommand(command: string, args: string[]) {
     return formatted;
   }
 
-  export function showTutorial() {
+  export function displayTutorial() {
 
     console.log(`${dim}# Adding a new task${reset}`);
     console.log(formatCommand('add', ['"Buy groceries"']));
