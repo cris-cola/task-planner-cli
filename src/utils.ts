@@ -24,11 +24,12 @@ function getTasks() {
 }
 export function executeCommand(command: string[]){
 	switch(command[0]){
+		case 'list-all':
+			listEntries();
+			break;
 		case 'add':
 			addEntry(command[1]);
-			break; // prevent fall-through
-		case 'update':
-			listEntries();
+			break;
 		default:
 			break;
 	}
@@ -46,7 +47,8 @@ function getNextId(ids: number[]){
 }
 
 function listEntries() {
-	throw new Error("You should provide at least one command.");
+	const taskList = getTasks();
+	console.log(JSON.stringify(taskList, null, 2));
 }
 
 function addEntry(taskName: string) {

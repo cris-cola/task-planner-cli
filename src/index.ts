@@ -2,37 +2,45 @@
 // ^ That “shebang” line makes it runnable as an executable if you chmod +x it.
 import { executeCommand, initializeJsonStore } from "./utils";
 initializeJsonStore();
-type Command = {
-	key: string,
-	value: string[]
-};
-const mapping: Command[] = [
-	{ key: "add", value: ["<task-name>"] },
-	{ key: "delete", value: ["<task-id>"] },
-	{ key: "update", value: ["<task-id>", "<task-name>"] },
-	{ key: "mark-in-progress", value: ["<task-id>"] },
-	{ key: "mark-done", value: ["<task-id>"] },
-	{ key: "list-all", value: [] }
+
+type Command = { key: string; args: string[] };
+const commands: Command[] = [
+	{ key: "add", args: ["<task-name>"] },
+	{ key: "delete", args: ["<task-id>"] },
+	{ key: "update", args: ["<task-id>", "<task-name>"] },
+	{ key: "mark-in-progress", args: ["<task-id>"] },
+	{ key: "mark-done", args: ["<task-id>"] },
+	{ key: "list-all", args: [] }
 ];
 
-validateInputs(process.argv);
-process.argv.slice(2).forEach((val, index, next) => {
-	
-	const keys = mapping.map(x => x.key);
-	if (keys.includes(val)) {
-		executeCommand(next);
-		return;
-	}
-});
+// Build a map once for O(1) lookups during validation
+const commandMap: Record<string, string[]> = Object.fromEntries(commands.map(c => [c.key, c.args]));
 
+function validateInputs(argv: string[]): { command: string; args: string[] } {
+	const command = argv[2];
+	if (!command) throw new Error("Missing command.");
 
-function validateInputs(argv: string[]) {
-	if(argv.length < 4){
-		throw new Error("You should provide at least one command.");
+	const args = commandMap[command];
+	if (!args) {
+		const list = commands.map(c => `- ${c.key} ${c.args.join(" ")}`).join("\n");
+		throw new Error(`Unsupported command: ${command}\nAvailable commands:\n${list}`);
 	}
-	if(argv.length > 4){
-		const entries = mapping.map(cmd => " " + cmd.key + " " + cmd.value).join("\n");
-    throw new Error(`Arguments not supported: you can only provide one of the following commands:\n${entries}`);
+
+	const providedArgs = argv.slice(3);
+	if (providedArgs.length !== args.length) {
+		throw new Error(
+			`Invalid argument for '${command}'. Expected: ${args.join(" ") || "<none>"}`
+		);
 	}
+
+	return { command, args: providedArgs };
+}
+
+try {
+	const { command, args } = validateInputs(process.argv);
+	executeCommand([command, ...args]);
+} catch (err) {
+	console.error((err as Error).message);
+	process.exit(1);
 }
 
