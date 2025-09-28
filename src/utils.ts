@@ -1,38 +1,24 @@
-import fs from "fs";
-// Removed accidental imports from 'inspector' and 'process' that shadowed console or were unused.
+import { getTasks, writeTasksToFile } from "./store";
 
-const FOLDER = "data";
-const FILEPATH = `${FOLDER}/store.json`;
-type Task = {
-	id: number,
-	taskName: string
-}
-export function logCommanisdInfo(currentValue: string, command: string, description: string) {
-	if (currentValue === command)
-		console.log(description);
-	return;
-}
-
-function getTasks() {
-	try {
-		const userJson = fs.readFileSync(FILEPATH, 'utf8');
-		return userJson.trim() ? JSON.parse(userJson) as Task[]: [];
-	} catch (err) {
-		console.log('Error reading store:', err);
-		return [];
-	}
-}
 export function executeCommand(command: string[]){
 	switch(command[0]){
-		case 'list-all':
-			listEntries();
+		case 'list':
+			listTasks();
 			break;
 		case 'add':
-			addEntry(command[1]);
+			addTask(command[1]);
+			break;
+		case 'update':
+			updateTask(command[1], command[2])
 			break;
 		default:
 			break;
 	}
+}
+
+function listTasks() {
+	const taskList = getTasks();
+	console.log(JSON.stringify(taskList, null, 2));
 }
 
 function getNextId(ids: number[]){
@@ -46,49 +32,24 @@ function getNextId(ids: number[]){
 	return maxId + 1;
 }
 
-function listEntries() {
-	const taskList = getTasks();
-	console.log(JSON.stringify(taskList, null, 2));
+function updateTask(taskId: string, description: string) {
+	throw new Error('Not implemented');
 }
 
-function addEntry(taskName: string) {
+function addTask(description: string) {
 	const taskList = getTasks();
 	
 	let newTaskId = getNextId(taskList.map(x => x.id));
-	taskList.push({ id: newTaskId, taskName });
+	taskList.push({ 
+		id: newTaskId, 
+		description, 
+		status: "todo", 
+		createdAt: new Date(), 
+		updatedAt: new Date()
+	});
 	
 	const sortedTasks = [...taskList].sort((a, b) => a.id - b.id);
-	writeTasks(sortedTasks, newTaskId);
-}
+	writeTasksToFile(sortedTasks);
 
-function writeTasksToFile(tasks: Task[]) {
-	try {
-		fs.writeFileSync(FILEPATH, JSON.stringify(tasks, null, 2));
-	} catch (err) {
-		console.log('Error writing file: ', err);
-	}
+	console.log(`\x1b[32mTask added successfully (ID: ${newTaskId})\x1b[0m`);
 }
-
-function writeTasks(tasks: Task[], newId?: number) { 
-	writeTasksToFile(tasks);
-	if(newId)
-		console.log(`Task added successfully (ID: ${newId})`);
-	else
-		console.log('Tasks store initialized!');
-}
-
-export function initializeJsonStore() {
-	const exists = fs.existsSync(FILEPATH);
-	if(!exists){
-		if (!fs.existsSync(FOLDER)) {
-				try{
-					fs.mkdirSync(FOLDER, { recursive: true });
-				} catch (err) {
-					console.log('Error creating directory:', err);
-					return;
-				}
-		}
-		const initialData: Task[] = [];
-		writeTasks(initialData);
-	}
-}	

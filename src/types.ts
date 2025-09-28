@@ -1,7 +1,9 @@
 export type Task = {
-	id: string,
+	id: number,
 	description: string,
 	status: "todo" | "in-progress" | "done"
 	createdAt: Date,
 	updatedAt: Date
 }
+
+export type Command = { key: string; args: string[] };

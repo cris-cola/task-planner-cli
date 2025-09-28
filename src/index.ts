@@ -1,19 +1,20 @@
 #! /usr/bin/env node
 // ^ That “shebang” line makes it runnable as an executable if you chmod +x it.
-import { executeCommand, initializeJsonStore } from "./utils";
+import { initializeJsonStore } from "./store";
+import { Command } from "./types";
+import { executeCommand } from "./utils";
+
 initializeJsonStore();
 
-type Command = { key: string; args: string[] };
 const commands: Command[] = [
-	{ key: "add", args: ["<task-name>"] },
+	{ key: "add", args: ["<task-description>"] },
 	{ key: "delete", args: ["<task-id>"] },
-	{ key: "update", args: ["<task-id>", "<task-name>"] },
+	{ key: "update", args: ["<task-id>", "<task-description>"] },
 	{ key: "mark-in-progress", args: ["<task-id>"] },
 	{ key: "mark-done", args: ["<task-id>"] },
-	{ key: "list-all", args: [] }
+	{ key: "list", args: [] }
 ];
 
-// Build a map once for O(1) lookups during validation
 const commandMap: Record<string, string[]> = Object.fromEntries(commands.map(c => [c.key, c.args]));
 
 function validateInputs(argv: string[]): { command: string; args: string[] } {
