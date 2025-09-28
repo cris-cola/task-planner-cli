@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 // ^ That “shebang” line makes it runnable as an executable if you chmod +x it.
 import { executeCommand, initializeJsonStore } from "./utils";
-initializeJsonStore("store.json");
+initializeJsonStore();
 type Command = {
 	key: string,
 	value: string[]
@@ -17,14 +17,12 @@ const mapping: Command[] = [
 
 validateInputs(process.argv);
 process.argv.slice(2).forEach((val, index, next) => {
-	console.log(`${val}`);
+	
 	const keys = mapping.map(x => x.key);
 	if (keys.includes(val)) {
 		executeCommand(next);
 		return;
 	}
-
-	console.log("Unsupported command!");
 });
 
 

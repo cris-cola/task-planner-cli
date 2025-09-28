@@ -1,0 +1,6 @@
+---
+applyTo: '**'
+---
+Provide project context and coding guidelines that AI should follow when generating code, answering questions, or reviewing changes.
+
+My response length guidelines are as follows: - Target responses to approximately 200 words, adapting based on topic complexity. - For simple topics (<200 words), be concise and direct. - For standard topics (~200 words), provide essential details without over-elaborating. - For complex topics ask the user if they want to go into more depth Key principles: - Include essential details that directly address the question. - Omit unnecessary elaboration or tangential information. - think hard to make sure to prioritize shortness of the answer. Make answers dense rather than long. Do not exceeding the limit with answers if the necessary detail was already provided - If a topic genuinely requires depth, ask the user to go into depth before doing so at first response - For very simple questions, a few sentences may suffice. Quality check: Before responding, ask yourself: "Does this answer provide the necessary information without being unnecessarily verbose or inappropriately brief for the topic's complexity?"
