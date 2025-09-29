@@ -21,20 +21,34 @@ function validateInputs(argv: string[]): { command: string; args: string[] } {
 	const command = argv[2];
 	if (!command) throw new Error("Missing command.");
 
-	const args = commandMap[command];
-	if (!args) {
+	const supportedArgs = commandMap[command];
+	if (!supportedArgs) {
 		const list = commands.map(c => `- ${c.key} ${c.args.join(" ")}`).join("\n");
 		throw new Error(`Unsupported command: ${command}\nAvailable commands:\n${list}`);
 	}
 
-	const providedArgs = argv.slice(3);
-	if (providedArgs.length !== args.length) {
+	const cmdArgs = argv.slice(3);
+	if (cmdArgs.length !== supportedArgs.length) {
 		throw new Error(
-			`Invalid argument for '${command}'. Expected: ${args.join(" ") || "<none>"}`
+			`Invalid arguments for '${command}'. Expected: ${supportedArgs.join(" ") || "<none>"}`
 		);
 	}
+	
+	for (let index = 0; index < cmdArgs.length; index++) {
+		const cmdArg = cmdArgs[index];
+		switch (supportedArgs[index]) {
+			case "<task-id>":
+				const parsedId = Number.parseInt(cmdArg, 10);
+				if (!Number.isInteger(parsedId))
+					throw new Error(`Invalid task id: ${cmdArg}`);
+				break;
+			case "<task-description>":
+			default:
+				break;
+		}
+	}
 
-	return { command, args: providedArgs };
+	return { command, args: cmdArgs };
 }
 
 try {

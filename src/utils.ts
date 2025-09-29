@@ -1,15 +1,18 @@
 import { getTasks, writeTasksToFile } from "./store";
 
-export function executeCommand(command: string[]){
-	switch(command[0]){
+export function executeCommand(commands: string[]){
+	switch(commands[0]){
 		case 'list':
 			listTasks();
 			break;
 		case 'add':
-			addTask(command[1]);
+			addTask(commands[1]);
 			break;
 		case 'update':
-			updateTask(command[1], command[2])
+			updateTask(Number.parseInt(commands[1], 10), commands[2]);
+			break;
+		case 'delete':
+			deleteTask(Number.parseInt(commands[1], 10));
 			break;
 		default:
 			break;
@@ -32,8 +35,29 @@ function getNextId(ids: number[]){
 	return maxId + 1;
 }
 
-function updateTask(taskId: string, description: string) {
-	throw new Error('Not implemented');
+function deleteTask(taskId: number) {
+	const taskList = getTasks();
+	const task = taskList.find(tsk => tsk.id === taskId);
+	if(!task) 
+		throw new Error(`Can't delete task (ID: ${taskId}): not found`);
+	
+	const taskIndex = taskList.indexOf(task);
+	taskList.splice(taskIndex, 1);
+
+	writeTasksToFile(taskList);
+}
+
+function updateTask(taskId: number, description: string) {
+	const taskList = getTasks();
+	const task = taskList.find(tsk => tsk.id === taskId);
+	if(!task) 
+		throw new Error(`Task with ID: ${taskId} not found`);
+	
+	const taskIndex = taskList.indexOf(task);
+	task.description = description;
+	task.updatedAt = new Date();
+	taskList[taskIndex] = task;
+	writeTasksToFile(taskList);
 }
 
 function addTask(description: string) {
