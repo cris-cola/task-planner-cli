@@ -1,9 +1,20 @@
 import { getTasks, writeTasksToFile } from "./store";
+import { Status } from "./types";
 
 export function executeCommand(commands: string[]){
 	switch(commands[0]){
 		case 'list':
+			const status = commands[1];
 			listTasks();
+			break;
+		case 'list done':
+			listTasks('done');
+			break;
+		case 'list todo':
+			listTasks('todo');
+			break;
+		case 'list in-progress':
+			listTasks('in-progress');
 			break;
 		case 'add':
 			addTask(commands[1]);
@@ -14,14 +25,21 @@ export function executeCommand(commands: string[]){
 		case 'delete':
 			deleteTask(Number.parseInt(commands[1], 10));
 			break;
+		case 'mark-in-progress':
+			markStatus(Number.parseInt(commands[1], 10), "in-progress");
+			break;
+		case 'mark-done':
+			markStatus(Number.parseInt(commands[1], 10), "done");
+			break;
 		default:
 			break;
 	}
 }
 
-function listTasks() {
-	const taskList = getTasks();
-	console.log(JSON.stringify(taskList, null, 2));
+function listTasks(status?: Status) {
+	let taskList = getTasks();
+	if (status) taskList.filter(tsk => tsk.status === status);
+	console.log(`\x1b[32m${JSON.stringify(taskList, null, 2)}\x1b[0m`);
 }
 
 function getNextId(ids: number[]){
@@ -47,6 +65,19 @@ function deleteTask(taskId: number) {
 	writeTasksToFile(taskList);
 }
 
+function markStatus(taskId: number, status: Status) {
+	const taskList = getTasks();
+	const task = taskList.find(tsk => tsk.id === taskId);
+	if(!task) 
+		throw new Error(`Task with ID: ${taskId} not found`);
+	
+	const taskIndex = taskList.indexOf(task);
+	task.status = status;
+	
+	taskList[taskIndex] = task;
+	writeTasksToFile(taskList);
+}
+
 function updateTask(taskId: number, description: string) {
 	const taskList = getTasks();
 	const task = taskList.find(tsk => tsk.id === taskId);
@@ -56,6 +87,7 @@ function updateTask(taskId: number, description: string) {
 	const taskIndex = taskList.indexOf(task);
 	task.description = description;
 	task.updatedAt = new Date();
+
 	taskList[taskIndex] = task;
 	writeTasksToFile(taskList);
 }

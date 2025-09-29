@@ -12,10 +12,10 @@ const commands: Command[] = [
 	{ key: "update", args: ["<task-id>", "<task-description>"] },
 	{ key: "mark-in-progress", args: ["<task-id>"] },
 	{ key: "mark-done", args: ["<task-id>"] },
-	{ key: "list", args: [] }
+	{ key: "list", args: [], optionalArgs: ["<task-status>"] },
 ];
 
-const commandMap: Record<string, string[]> = Object.fromEntries(commands.map(c => [c.key, c.args]));
+const commandMap: Record<string, string[]> = Object.fromEntries(commands.map(c => [c.key, c.args ]));
 
 function validateInputs(argv: string[]): { command: string; args: string[] } {
 	const command = argv[2];
@@ -41,6 +41,8 @@ function validateInputs(argv: string[]): { command: string; args: string[] } {
 				const parsedId = Number.parseInt(cmdArg, 10);
 				if (!Number.isInteger(parsedId))
 					throw new Error(`Invalid task id: ${cmdArg}`);
+				break;
+			case "<task-status>":
 				break;
 			case "<task-description>":
 			default:
