@@ -8,4 +8,4 @@ export type Task = {
 	updatedAt: Date
 }
 
-export type Command = { key: string; args: string[], optionalArgs?: string[] };
+export type Command = { key: string; required: string[], optional?: string[] };

@@ -20,16 +20,16 @@ export function executeCommand(commands: string[]){
 			addTask(commands[1]);
 			break;
 		case 'update':
-			updateTask(Number.parseInt(commands[1], 10), commands[2]);
+			updateTask(parseInt(commands[1]), commands[2]);
 			break;
 		case 'delete':
-			deleteTask(Number.parseInt(commands[1], 10));
+			deleteTask(parseInt(commands[1]));
 			break;
 		case 'mark-in-progress':
-			markStatus(Number.parseInt(commands[1], 10), "in-progress");
+			markStatus(parseInt(commands[1]), "in-progress");
 			break;
 		case 'mark-done':
-			markStatus(Number.parseInt(commands[1], 10), "done");
+			markStatus(parseInt(commands[1]), "done");
 			break;
 		default:
 			break;
@@ -108,4 +108,12 @@ function addTask(description: string) {
 	writeTasksToFile(sortedTasks);
 
 	console.log(`\x1b[32mTask added successfully (ID: ${newTaskId})\x1b[0m`);
+}
+
+export function tryParseInt(cmdArg: string) {
+	const parsedId = Number.parseInt(cmdArg, 10);
+	if (!Number.isInteger(parsedId))
+		throw new Error(`Invalid task id: ${cmdArg}`);
+
+	return parsedId;
 }
