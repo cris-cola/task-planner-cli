@@ -16,7 +16,6 @@ const commands: Command[] = [
 	{ key: "add-stuff", required: ["<task-description>"], optional: ["<task-status>"] },
 ];
 
-
 interface CommandSpec {
   key: string;
   required: string[];
@@ -33,13 +32,13 @@ function validateCommand(argv: string[]): { command: string; args: string[] } {
 	const command = argv[2];
 	if (!command) throw new Error("Missing command.");
 
-	const supportedArgs = commandMap[command];
-	if (!supportedArgs) {
+	const supported = commandMap[command];
+	if (!supported) {
 		const list = commands.map(cmd => `- ${cmd.key} ${cmd.required.join(" ")}`).join("\n");
 		throw new Error(`Unsupported command: ${command}\nAvailable commands:\n${list}`);
 	}
 
-	const args = validateArguments(argv.slice(3), supportedArgs, command);
+	const args = validateArguments(argv.slice(3), supported, command);
 	return { command, args };
 }
 
@@ -51,27 +50,37 @@ try {
 	process.exit(1);
 }
 
-function validateArguments(args: string[], supportedArgs: CommandSpec, command: string) {
-	const required = supportedArgs.required;
-	if (args.length !== required.length && args.length !== supportedArgs.optional.length) {
+function validateArguments(args: string[], supported: CommandSpec, command: string) {
+	const min = supported.required.length;
+	const max = min + supported.optional.length;
+	const supportedArgs = [...supported.required, ...supported.optional];
+	if (args.length < min || args.length > max) {
+		const expected = supportedArgs.join(" ")
 		throw new Error(
-			`Invalid arguments for '${command}'. Expected: ${required.join(" ") || "<none>"}`
+			`Invalid arguments for '${command}'. Expected: ${expected || "<none>"}`
 		);
 	}
 
 	for (let index = 0; index < args.length; index++) {
-		const cmdArg = args[index];
-		switch (required[index]) {
+		const val = args[index];
+		const spec = supportedArgs[index];
+		switch (spec) {
 			case "<task-id>":
-				tryParseInt(cmdArg);
+				tryParseInt(val);
+				break;
+			case "<task-status>":
+				if (!isStatus(val)){
+					throw new Error(`Invalid stqatus '${val}'. Allowed: todo, in-progress, done`);
+				}
 				break;
 			default:
 				break;
 		}
-		const optional = supportedArgs.optional;
-		if (optional[index] === "<task-status>"){
-			const s = cmdArg as Status;
-		}
 	}
 	return args;
+}
+
+function isStatus(value: string): value is Status {
+  const allowed: Status[] = ['todo', 'in-progress', 'done'];
+  return allowed.includes(value as Status);
 }
