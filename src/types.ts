@@ -1,4 +1,9 @@
-export type Status = "todo" | "in-progress" | "done";
+// export type Status = "todo" | "in-progress" | "done";
+export enum Status {
+  Todo = 'todo',
+  InProgress = 'in-progress',
+  Done = 'done'
+}
 
 export type Task = {
 	id: number,
@@ -7,5 +12,5 @@ export type Task = {
 	createdAt: Date,
 	updatedAt: Date
 }
-
+	
 export type Command = { key: string; required: string[], optional?: string[] };

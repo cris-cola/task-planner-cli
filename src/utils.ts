@@ -4,17 +4,19 @@ import { Status } from "./types";
 export function executeCommand(commands: string[]){
 	switch(commands[0]){
 		case 'list':
-			const status = commands[1];
-			listTasks();
-			break;
-		case 'list done':
-			listTasks('done');
-			break;
-		case 'list todo':
-			listTasks('todo');
-			break;
-		case 'list in-progress':
-			listTasks('in-progress');
+			switch (commands[1]) {
+				case "done":
+					listTasks(Status.Done);
+					break;
+				case "todo":
+					listTasks(Status.Todo);
+					break;
+				case "in-progress":
+					listTasks(Status.InProgress);
+					break;
+				default:
+					listTasks();
+			}
 			break;
 		case 'add':
 			addTask(commands[1]);
@@ -26,10 +28,10 @@ export function executeCommand(commands: string[]){
 			deleteTask(parseInt(commands[1]));
 			break;
 		case 'mark-in-progress':
-			markStatus(parseInt(commands[1]), "in-progress");
+			markStatus(parseInt(commands[1]), Status.InProgress);
 			break;
 		case 'mark-done':
-			markStatus(parseInt(commands[1]), "done");
+			markStatus(parseInt(commands[1]), Status.Done);
 			break;
 		default:
 			break;
@@ -38,7 +40,9 @@ export function executeCommand(commands: string[]){
 
 function listTasks(status?: Status) {
 	let taskList = getTasks();
-	if (status) taskList.filter(tsk => tsk.status === status);
+	if (status)
+		taskList = taskList.filter(tsk => tsk.status === status);
+	
 	console.log(`\x1b[32m${JSON.stringify(taskList, null, 2)}\x1b[0m`);
 }
 
@@ -63,6 +67,7 @@ function deleteTask(taskId: number) {
 	taskList.splice(taskIndex, 1);
 
 	writeTasksToFile(taskList);
+	console.log(`\x1b[32mTask deleted successfully (ID: ${taskId})\x1b[0m`);
 }
 
 function markStatus(taskId: number, status: Status) {
@@ -73,9 +78,11 @@ function markStatus(taskId: number, status: Status) {
 	
 	const taskIndex = taskList.indexOf(task);
 	task.status = status;
+	task.updatedAt = new Date();
 	
 	taskList[taskIndex] = task;
 	writeTasksToFile(taskList);
+	console.log(`\x1b[32mTask status updated (ID: ${taskId})\x1b[0m`);
 }
 
 function updateTask(taskId: number, description: string) {
@@ -90,6 +97,7 @@ function updateTask(taskId: number, description: string) {
 
 	taskList[taskIndex] = task;
 	writeTasksToFile(taskList);
+	console.log(`\x1b[32mTask updated successfully (ID: ${taskId})\x1b[0m`);
 }
 
 function addTask(description: string) {
@@ -99,7 +107,7 @@ function addTask(description: string) {
 	taskList.push({ 
 		id: newTaskId, 
 		description, 
-		status: "todo", 
+		status: Status.Todo, 
 		createdAt: new Date(), 
 		updatedAt: new Date()
 	});

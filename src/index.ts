@@ -81,6 +81,5 @@ function validateArguments(args: string[], supported: CommandSpec, command: stri
 }
 
 function isStatus(value: string): value is Status {
-  const allowed: Status[] = ['todo', 'in-progress', 'done'];
-  return allowed.includes(value as Status);
+  return Object.values(Status).includes(value as Status);
 }
