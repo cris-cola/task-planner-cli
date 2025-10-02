@@ -1,5 +1,15 @@
 import { getTasks, writeTasksToFile } from "./store";
-import { Status } from "./types";
+import { Status, StatusExtra } from "./types";
+
+// ANSI color codes
+const GREEN = '\x1b[32m';
+const RED = '\x1b[31m';
+const YELLOW = '\x1b[33m';  // Closest to orange in ANSI
+const RESET = '\x1b[0m';
+
+export const colorizeGreen = (text: string) => `${GREEN}${text}${RESET}`;
+export const colorizeRed = (text: string) => `${RED}${text}${RESET}`;
+export const colorizeYellow = (text: string) => `${YELLOW}${text}${RESET}`;
 
 export function executeCommand(commands: string[]){
 	switch(commands[0]){
@@ -13,6 +23,9 @@ export function executeCommand(commands: string[]){
 					break;
 				case "in-progress":
 					listTasks(Status.InProgress);
+					break;
+				case "not-done":
+					listTasksNotDone();
 					break;
 				default:
 					listTasks();
@@ -38,12 +51,21 @@ export function executeCommand(commands: string[]){
 	}
 }
 
-function listTasks(status?: Status) {
+function listTasksNotDone() {
 	let taskList = getTasks();
-	if (status)
-		taskList = taskList.filter(tsk => tsk.status === status);
+	taskList = taskList.filter(tsk => tsk.status !== Status.Done);
 	
-	console.log(`\x1b[32m${JSON.stringify(taskList, null, 2)}\x1b[0m`);
+	console.log(colorizeGreen(JSON.stringify(taskList, null, 2)));
+}
+
+function listTasks(status?: Status | StatusExtra) {
+	let taskList = getTasks();
+	if (status === StatusExtra.NotDone)
+		taskList = taskList.filter(tsk => tsk.status !== Status.Done);
+	else if (status)
+		taskList = taskList.filter(tsk => tsk.status === status);
+
+	console.log(colorizeGreen(JSON.stringify(taskList, null, 2)));
 }
 
 function getNextId(ids: number[]){
@@ -60,21 +82,23 @@ function getNextId(ids: number[]){
 function deleteTask(taskId: number) {
 	const taskList = getTasks();
 	const task = taskList.find(tsk => tsk.id === taskId);
-	if(!task) 
-		throw new Error(`Can't delete task (ID: ${taskId}): not found`);
+	if(!task) {
+		// console.error(colorizeRed(`Can't delete task (ID: ${taskId}): not found`));
+		throw new Error(colorizeRed(`Can't delete task (ID: ${taskId}): not found`));
+	}
 	
 	const taskIndex = taskList.indexOf(task);
 	taskList.splice(taskIndex, 1);
 
 	writeTasksToFile(taskList);
-	console.log(`\x1b[32mTask deleted successfully (ID: ${taskId})\x1b[0m`);
+	console.log(colorizeGreen(`Task deleted successfully (ID: ${taskId})`));
 }
 
 function markStatus(taskId: number, status: Status) {
 	const taskList = getTasks();
 	const task = taskList.find(tsk => tsk.id === taskId);
 	if(!task) 
-		throw new Error(`Task with ID: ${taskId} not found`);
+		throw new Error(colorizeRed(`Task with ID: ${taskId} not found`));
 	
 	const taskIndex = taskList.indexOf(task);
 	task.status = status;
@@ -82,7 +106,7 @@ function markStatus(taskId: number, status: Status) {
 	
 	taskList[taskIndex] = task;
 	writeTasksToFile(taskList);
-	console.log(`\x1b[32mTask status updated (ID: ${taskId})\x1b[0m`);
+	console.log(colorizeGreen(`Task status updated (ID: ${taskId})`));
 }
 
 function updateTask(taskId: number, description: string) {
@@ -97,7 +121,7 @@ function updateTask(taskId: number, description: string) {
 
 	taskList[taskIndex] = task;
 	writeTasksToFile(taskList);
-	console.log(`\x1b[32mTask updated successfully (ID: ${taskId})\x1b[0m`);
+	console.log(colorizeGreen(`Task updated successfully (ID: ${taskId})`));
 }
 
 function addTask(description: string) {
@@ -115,13 +139,13 @@ function addTask(description: string) {
 	const sortedTasks = [...taskList].sort((a, b) => a.id - b.id);
 	writeTasksToFile(sortedTasks);
 
-	console.log(`\x1b[32mTask added successfully (ID: ${newTaskId})\x1b[0m`);
+	console.log(colorizeGreen(`Task added successfully (ID: ${newTaskId})`));
 }
 
 export function tryParseInt(cmdArg: string) {
 	const parsedId = Number.parseInt(cmdArg, 10);
 	if (!Number.isInteger(parsedId))
-		throw new Error(`Invalid task id: ${cmdArg}`);
+		throw new Error(colorizeRed(`Invalid task id: ${cmdArg}`));
 
 	return parsedId;
 }

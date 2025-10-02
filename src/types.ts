@@ -1,8 +1,11 @@
-// export type Status = "todo" | "in-progress" | "done";
 export enum Status {
   Todo = 'todo',
   InProgress = 'in-progress',
   Done = 'done'
+}
+
+export enum StatusExtra {
+  NotDone = 'not-done'
 }
 
 export type Task = {

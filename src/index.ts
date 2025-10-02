@@ -1,8 +1,8 @@
 #! /usr/bin/env node
 // ^ That “shebang” line makes it runnable as an executable if you chmod +x it.
 import { initializeJsonStore } from "./store";
-import { Command, Status } from "./types";
-import { executeCommand, tryParseInt } from "./utils";
+import { Command, Status, StatusExtra } from "./types";
+import { colorizeRed, executeCommand, tryParseInt } from "./utils";
 
 initializeJsonStore();
 
@@ -13,7 +13,6 @@ const commands: Command[] = [
 	{ key: "mark-in-progress", required: ["<task-id>"] },
 	{ key: "mark-done", required: ["<task-id>"] },
 	{ key: "list", required: [], optional: ["<task-status>"] },
-	{ key: "add-stuff", required: ["<task-description>"], optional: ["<task-status>"] },
 ];
 
 interface CommandSpec {
@@ -34,8 +33,10 @@ function validateCommand(argv: string[]): { command: string; args: string[] } {
 
 	const supported = commandMap[command];
 	if (!supported) {
-		const list = commands.map(cmd => `- ${cmd.key} ${cmd.required.join(" ")}`).join("\n");
-		throw new Error(`Unsupported command: ${command}\nAvailable commands:\n${list}`);
+		const list = commands.map(cmd => {
+			return `- ${cmd.key} ${cmd.required.join(" ")}${cmd.optional ? cmd.optional?.join(" ") : []}`
+		}).join("\n");
+		throw new Error(colorizeRed(`Unsupported command: ${command}\nAvailable commands:\n${list}`));
 	}
 
 	const args = validateArguments(argv.slice(3), supported, command);
@@ -57,7 +58,7 @@ function validateArguments(args: string[], supported: CommandSpec, command: stri
 	if (args.length < min || args.length > max) {
 		const expected = supportedArgs.join(" ")
 		throw new Error(
-			`Invalid arguments for '${command}'. Expected: ${expected || "<none>"}`
+			colorizeRed(`Invalid arguments for '${command}'. Expected: ${expected || "<none>"}`)
 		);
 	}
 
@@ -69,8 +70,8 @@ function validateArguments(args: string[], supported: CommandSpec, command: stri
 				tryParseInt(val);
 				break;
 			case "<task-status>":
-				if (!isStatus(val)){
-					throw new Error(`Invalid stqatus '${val}'. Allowed: todo, in-progress, done`);
+				if (!isStatus(val) && val !== StatusExtra.NotDone) {
+					throw new Error(colorizeRed(`Invalid status '${val}'. Allowed: ${Object.values(Status).join(", ")}`));
 				}
 				break;
 			default:
