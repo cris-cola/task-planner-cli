@@ -1,44 +1,35 @@
-# task-planner-cli
-Task Tracker
+# Task Planner CLI
 
-## How to Run the Application
+A simple command-line task tracker built with Node.js and TypeScript. Manage tasks with add, delete, update, mark status, and list operations.
 
-### Standard Setup & Execution
+Project: https://roadmap.sh/projects/task-tracker
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+## Installation
 
-2. Build and run in development mode:
-   ```bash
-   npm run build:watch & npm run dev
-   ```
-   *Use this method for rapid development with automatic rebuilding when files change.*
-
-   Alternatively, build once and then run:
-   ```bash
-   npm run build && npm run dev
-   ```
-   *Prefer this method for production or when you need a clean build.*
-
-### Direct TypeScript Execution
-
-Run TypeScript files directly without separate compilation:
 ```bash
-npm start
-```
-*This is useful for quick testing during development.*
-
-### Global CLI Usage
-
-Make the tool available as a global command:
-```bash
-npm link task-cli
+npm install
+npm run build
 ```
 
-After linking, run commands directly using:
+## Global Installation
+
 ```bash
-task-cli [command] [options]
+npm link
 ```
-*Replace `task-cli` with the actual package name if different.*
+
+Run `task-cli` commands from anywhere.
+
+## Usage
+
+- Add task: `task-cli add "Task description"`
+- Delete task: `task-cli delete <id>`
+- Update task: `task-cli update <id> "New description"`
+- Mark status: `task-cli mark-todo <id>`, `task-cli mark-in-progress <id>`, `task-cli mark-done <id>`
+- List tasks: `task-cli list`
+
+## Testing
+
+Run all tests:
+```bash
+npm test
+```

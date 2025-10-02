@@ -2,19 +2,27 @@ import fs from "fs";
 import { Task } from "./types";
 import { colorizeGreen } from "./utils";
 
-const FILENAME = "store.json";
+const DEFAULT_STORE_FILENAME = "store.json";
+
+function getStoreFilename() {
+	return process.env.TASK_STORE_PATH ?? DEFAULT_STORE_FILENAME;
+}
 
 export function initializeJsonStore() {
-	if(!fs.existsSync(FILENAME)){
+	const filename = getStoreFilename();
+	if(!fs.existsSync(filename)){
 		const initialData: Task[] = [];
-		writeTasksToFile(initialData);
+		fs.writeFileSync(filename, JSON.stringify(initialData, null, 2));
 	  console.log(colorizeGreen("Tasks store initialized!"));
 	}
 }	
 
 export function getTasks() {
+	const filename = getStoreFilename();
+	if (!fs.existsSync(filename)) return [];
+
   try {
-    const storeJson = fs.readFileSync(FILENAME, 'utf8');
+    const storeJson = fs.readFileSync(filename, 'utf8');
     return storeJson.trim() ? JSON.parse(storeJson) as Task[]: [];
   } catch (err) {
 		console.error('\x1b[31mError reading store:\x1b[0m', err);
@@ -23,8 +31,9 @@ export function getTasks() {
 }
 
 export function writeTasksToFile(tasks: Task[]) {
+  const filename = getStoreFilename();
   try {
-    fs.writeFileSync(FILENAME, JSON.stringify(tasks, null, 2));
+    fs.writeFileSync(filename, JSON.stringify(tasks, null, 2));
   } catch (err) {
 		console.error('\x1b[31mError writing file:\x1b[0m', err);
   }

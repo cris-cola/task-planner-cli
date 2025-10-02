@@ -76,14 +76,17 @@ function listTasks(status?: Status | StatusExtra) {
 }
 
 function getNextId(ids: number[]){
-	if(ids.length === 0) return 0;
+	if(ids.length === 0) return 1;
 
-	const maxId = Math.max(...ids);
+	const sortedIds = [...ids].sort((a, b) => a - b);
+	let nextId = 1;
 
-	for (let i = 0; i <= maxId; i++)
-		if(!ids.includes(i)) return i;
+	for (const id of sortedIds){
+		if (id > nextId) break;
+		if (id === nextId) nextId += 1;
+	}
 
-	return maxId + 1;
+	return nextId;
 }
 
 function deleteTask(taskId: number) {
