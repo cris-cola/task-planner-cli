@@ -1,31 +1,19 @@
 #! /usr/bin/env node
 // ^ That “shebang” line makes it runnable as an executable if you chmod +x it.
+import { commandMap, commands, executeCommand } from "./commands";
 import { initializeJsonStore } from "./store";
 import { Command, Status, StatusExtra } from "./types";
-import { colorizeRed, executeCommand, tryParseInt } from "./utils";
+import { colorizeRed, isStatus, tryParseInt } from "./utils";
 
 initializeJsonStore();
 
-const commands: Command[] = [
-	{ key: "add", required: ["<task-description>"] },
-	{ key: "delete", required: ["<task-id>"] },
-	{ key: "update", required: ["<task-id>", "<task-description>"] },
-	{ key: "mark-in-progress", required: ["<task-id>"] },
-	{ key: "mark-done", required: ["<task-id>"] },
-	{ key: "list", required: [], optional: ["<task-status>"] },
-];
-
-interface CommandSpec {
-  key: string;
-  required: string[];
-  optional: string[];
+try {
+	const { command, args } = validateCommand(process.argv);
+	executeCommand([command, ...args]);
+} catch (err) {
+	console.error((err as Error).message);
+	process.exit(1);
 }
-
-const commandMap: Record<string, CommandSpec> = Object.fromEntries(commands.map(c => [c.key, { 
-	key: c.key, 
-	required: c.required, 
-	optional: c.optional ?? [] 
-}]));
 
 function validateCommand(argv: string[]): { command: string; args: string[] } {
 	const command = argv[2];
@@ -43,15 +31,7 @@ function validateCommand(argv: string[]): { command: string; args: string[] } {
 	return { command, args };
 }
 
-try {
-	const { command, args } = validateCommand(process.argv);
-	executeCommand([command, ...args]);
-} catch (err) {
-	console.error((err as Error).message);
-	process.exit(1);
-}
-
-function validateArguments(args: string[], supported: CommandSpec, command: string) {
+function validateArguments(args: string[], supported: Command, command: string) {
 	const min = supported.required.length;
 	const max = min + supported.optional.length;
 	const supportedArgs = [...supported.required, ...supported.optional];
@@ -70,17 +50,12 @@ function validateArguments(args: string[], supported: CommandSpec, command: stri
 				tryParseInt(val);
 				break;
 			case "<task-status>":
-				if (!isStatus(val) && val !== StatusExtra.NotDone) {
+				if (!isStatus(val) && val !== StatusExtra.NotDone)
 					throw new Error(colorizeRed(`Invalid status '${val}'. Allowed: ${Object.values(Status).join(", ")}`));
-				}
 				break;
 			default:
 				break;
 		}
 	}
 	return args;
-}
-
-function isStatus(value: string): value is Status {
-  return Object.values(Status).includes(value as Status);
 }

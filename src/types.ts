@@ -1,3 +1,10 @@
+
+export interface Command {
+  key: string;
+  required: string[];
+  optional: string[];
+}
+
 export enum Status {
   Todo = 'todo',
   InProgress = 'in-progress',
@@ -15,5 +22,3 @@ export type Task = {
 	createdAt: Date,
 	updatedAt: Date
 }
-	
-export type Command = { key: string; required: string[], optional?: string[] };
