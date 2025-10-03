@@ -1,22 +1,7 @@
 
 import { getTasks, writeTasksToFile } from "./store";
-import { Command, Status, StatusExtra } from "./types";
+import { Status, StatusExtra } from "./types";
 import { colorizeGreen, colorizeRed } from "./utils";
-
-export const commands: Command[] = [
-	{ key: "add", required: ["<task-description>"], optional: [] },
-	{ key: "delete", required: ["<task-id>"], optional: [] },
-	{ key: "update", required: ["<task-id>", "<task-description>"], optional: [] },
-	{ key: "mark-in-progress", required: ["<task-id>"], optional: [] },
-	{ key: "mark-done", required: ["<task-id>"], optional: [] },
-	{ key: "list", required: [], optional: ["<task-status>"] },
-];
-
-export const commandMap: Record<string, Command> = Object.fromEntries(commands.map(c => [c.key, { 
-	key: c.key, 
-	required: c.required, 
-	optional: c.optional ?? [] 
-}]));
 
 export function executeCommand(commands: string[]){
 	switch(commands[0]){

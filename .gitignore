@@ -1,3 +1,4 @@
 /src/dist/index.js
 node_modules/
 /src/dist/*
+store.json
