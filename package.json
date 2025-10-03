@@ -1,7 +1,7 @@
 {
-  "name": "task-planner-cli",
+  "name": "task-tracker-cli",
   "version": "1.0.0",
-  "description": "A simple CLI task planner application",
+  "description": "A simple CLI task tracker application",
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "node src/dist/index.js",
@@ -15,11 +15,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "task-planner-cli"
+    "url": "task-tracker-cli"
   },
   "keywords": [
     "task",
-    "planner"
+    "tracker"
   ],
   "author": "",
   "license": "MIT",

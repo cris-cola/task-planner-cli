@@ -1,4 +1,4 @@
-# Task Planner CLI
+# Task Tracker CLI
 
 A simple command-line task tracker built with Node.js and TypeScript. Manage tasks with add, delete, update, mark status, and list operations.
 
