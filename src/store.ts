@@ -8,7 +8,7 @@ function getStoreFilename() {
 	return process.env.TASK_STORE_PATH ?? DEFAULT_STORE_FILENAME;
 }
 
-export function initializeJsonStore() {
+export function initStore() {
 	const filename = getStoreFilename();
 	if(!fs.existsSync(filename)){
 		const initialData: Task[] = [];

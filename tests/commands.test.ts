@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import fs from 'fs';
 import path from 'path';
 import { executeCommand } from '../src/commands';
-import { getTasks, initializeJsonStore } from '../src/store';
+import { getTasks, initStore } from '../src/store';
 import { Status } from '../src/types';
 
 describe('Commands Module', () => {
@@ -14,7 +14,7 @@ describe('Commands Module', () => {
     if (fs.existsSync(testFilename)) {
       fs.unlinkSync(testFilename);
     }
-    initializeJsonStore();
+    initStore();
   });
   
   afterEach(() => {

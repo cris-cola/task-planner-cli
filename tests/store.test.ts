@@ -2,7 +2,7 @@ import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
 import fs from 'fs';
 import path from 'path';
-import { getTasks, writeTasksToFile, initializeJsonStore } from '../src/store';
+import { getTasks, writeTasksToFile, initStore } from '../src/store';
 import { Task, Status } from '../src/types';
 
 describe('Store Module', () => {
@@ -27,7 +27,7 @@ describe('Store Module', () => {
     it('should create store.json file if it does not exist', () => {
       assert.strictEqual(fs.existsSync(testFilename), false);
       
-      initializeJsonStore();
+      initStore();
       
       assert.strictEqual(fs.existsSync(testFilename), true);
       const content = fs.readFileSync(testFilename, 'utf8');

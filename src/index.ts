@@ -1,15 +1,21 @@
 #! /usr/bin/env node
 // ^ That “shebang” line makes it runnable as an executable if you chmod +x it.
 import { executeCommand } from "./commands";
-import { initializeJsonStore } from "./store";
+import { initStore } from "./store";
 import { validateCommand } from "./validation";
 
-initializeJsonStore();
+initStore();
 
-try {
-	const { command, args } = validateCommand(process.argv);
-	executeCommand([command, ...args]);
-} catch (err) {
-	console.error((err as Error).message);
-	process.exit(1);
+class App {
+	static start(){
+		try {
+			const { command, args } = validateCommand(process.argv);
+			executeCommand([command, ...args]);
+		} catch (err) {
+			console.error((err as Error).message);
+			process.exit(1);
+		}
+	}
 }
+
+App.start();
