@@ -2,7 +2,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { validateCommand } from '../src/validation';
 
-describe.only('CLI Validation', () => {
+describe('CLI Validation', () => {
   it('should parse valid command and args', () => {
     const cases = [
       { argv: ['node', 'script', 'add', 'Task1'], cmd: 'add', args: ['Task1'] },
